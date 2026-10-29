@@ -1,0 +1,9 @@
+{
+  "schema": "potato.character/1",
+  "id": "shou_lie_zhe",
+  "name": "首獵者",
+  "origin": "不詳",
+  "prior": "aggressive",
+  "deck_seed": 2030,
+  "deck": ["ord_tonfa_lock", "ord_press", "ord_break_ranks"]
+}
