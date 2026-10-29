@@ -35,9 +35,11 @@ int main() {
     const auto* character = characters.Find("shou_lie_zhe");
     Check(character != nullptr, "首獵者 is registered");
     if (character == nullptr) return 1;
-    Check(character->name == "首獵者" && character->deck.size() == 3 &&
-              character->deck.front() == "ord_tonfa_lock",
-          "首獵者 starts with the signature 雙棍合鎖 card");
+    Check(character->name == "首獵者" && character->deck.size() == 4 &&
+              character->deck.front() == "ord_tonfa_lock" &&
+              character->deck.size() > 1 &&
+              character->deck[1] == "ord_shou_lie_fist",
+          "首獵者 starts with the signature tonfa and unarmed doctrine cards");
 
     const auto doctrine = Potato::Gameplay::DoctrineLibrary::Load(
         (repo / "assets" / "doctrine" / "core.json").string());
@@ -55,6 +57,18 @@ int main() {
                       Potato::Gameplay::ModifierKind::AttackBoost &&
                   signature->modifierParam == 15,
               "signature card uses the intended close-range control rules");
+        const auto* fist = doctrine.value.Find("ord_shou_lie_fist");
+        Check(fist != nullptr && fist->name == "首獵者拳法" &&
+                  fist->trigger ==
+                      Potato::Gameplay::TriggerKind::EnemyAdjacent &&
+                  fist->condition ==
+                      Potato::Gameplay::ConditionKind::CpAtLeast &&
+                  fist->conditionParam == 3 &&
+                  fist->action == Potato::Gameplay::ActionKind::Hold &&
+                  fist->modifier ==
+                      Potato::Gameplay::ModifierKind::AttackBoost &&
+                  fist->modifierParam == 20,
+              "unarmed signature card uses abstract close-range assault rules");
         Check(Potato::Gameplay::SquadSheet::Build(
                   doctrine.value, character->deck).ok(),
               "首獵者 starting deck resolves in the battle doctrine pool");

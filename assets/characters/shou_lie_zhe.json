@@ -5,5 +5,5 @@
   "origin": "不詳",
   "prior": "aggressive",
   "deck_seed": 2030,
-  "deck": ["ord_tonfa_lock", "ord_press", "ord_break_ranks"]
+  "deck": ["ord_tonfa_lock", "ord_shou_lie_fist", "ord_press", "ord_break_ranks"]
 }
