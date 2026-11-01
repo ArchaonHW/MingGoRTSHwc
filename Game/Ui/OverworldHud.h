@@ -75,8 +75,9 @@ enum class OverworldTab : std::uint8_t {
     Roster,        // 名冊   — campaign roster
     Ledger,        // 帳冊   — recent postings
     Codex,         // 本草   — unlocked/pending pages
+    Auction,       // 拍賣   — recruit contract proxy auction
 };
-constexpr std::size_t kOverworldTabCount = 6;
+constexpr std::size_t kOverworldTabCount = 7;
 // CJK section title ("行軍令", …) — presentation vocabulary.
 const char* OverworldTabTitle(OverworldTab t);
 

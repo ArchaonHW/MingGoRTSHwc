@@ -1,0 +1,10 @@
+{
+  "schema": "potato.auction_lot/1",
+  "id": "militia_contract",
+  "title": "鄉勇營招募契約",
+  "reward_squad": "鄉勇營",
+  "opening_bid": 40,
+  "minimum_increment": 10,
+  "rival_max_bid": 70,
+  "duration_days": 3
+}

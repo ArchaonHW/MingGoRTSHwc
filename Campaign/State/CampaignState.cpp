@@ -118,6 +118,12 @@ const char* ValidateRoster(const JsonValue& j,
 } // namespace
 
 Result<JsonValue> CampaignState::ToJson() const {
+    const std::int64_t expectedEscrow = auction_.Open()
+        ? auction_.PlayerMaxBid() : 0;
+    if (ledger_.Balance(Account::AuctionEscrow) != expectedEscrow) {
+        return Gameplay::Fail<JsonValue>(
+            "auction", "auction escrow does not match campaign ledger");
+    }
     Result<JsonValue> led = ledger_.ToJson();
     if (!led.ok()) {
         return led; // propagate the ledger's failure
@@ -170,6 +176,7 @@ Result<JsonValue> CampaignState::ToJson() const {
         }
         o["codex"] = std::move(c.value);
     }
+    o["auction"] = auction_.ToJson();
     return Gameplay::Ok(JsonValue::MakeObject(std::move(o)));
 }
 
@@ -250,6 +257,21 @@ Result<CampaignState> CampaignState::FromJson(
                                                  c.reason);
         }
         st.codex_ = std::move(c.value);
+    }
+    if (doc.Has("auction")) {
+        Result<AuctionHouseState> auction =
+            AuctionHouseState::FromJson(doc["auction"]);
+        if (!auction.ok()) {
+            return Gameplay::Fail<CampaignState>(auction.error,
+                                                 auction.reason);
+        }
+        st.auction_ = std::move(auction.value);
+    }
+    const std::int64_t expectedEscrow = st.auction_.Open()
+        ? st.auction_.PlayerMaxBid() : 0;
+    if (st.ledger_.Balance(Account::AuctionEscrow) != expectedEscrow) {
+        return Gameplay::Fail<CampaignState>(
+            "auction", "auction escrow does not match campaign ledger");
     }
     return Gameplay::Ok(std::move(st));
 }

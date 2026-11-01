@@ -10,7 +10,7 @@
 
 namespace Potato::Campaign {
 
-// The five spendable accounts. 秩序/墮落 are deliberately absent —
+// Spendable accounts. 秩序/墮落 are deliberately absent —
 // they are derived accumulators folded from entry tags (Epic 4),
 // never booked directly.
 enum class Account : std::uint8_t {
@@ -19,8 +19,10 @@ enum class Account : std::uint8_t {
     Mandate = 2,        // 天命
     ArmyPrestige = 3,   // 軍威
     Materiel = 4,       // 物資
+    AuctionEscrow = 5,  // 拍賣托管（不計入可用物資）
+    AuctionTreasury = 6, // 拍賣成交款（NPC 市集）
 };
-constexpr int kAccountCount = 5;
+constexpr int kAccountCount = 7;
 
 // Stable ASCII wire ids (CJK labels are presentation-layer, Epic 8).
 const char* AccountName(Account a);

@@ -619,7 +619,16 @@ target_link_libraries(PotatoCampaign PUBLIC PotatoGameplay)
 target_link_libraries(PotatoCampaign PRIVATE PotatoQuantum)
 
 if(POTATO_TESTS)
-# Story 2.1 — five-account double-entry ledger
+# Auction-house escrow, proxy settlement, recruit award, and persistence.
+add_executable(potato_test_auction
+    Examples/MingGoRTS/potato_test_auction.cpp)
+target_include_directories(potato_test_auction PRIVATE ${CMAKE_SOURCE_DIR})
+target_compile_definitions(potato_test_auction PRIVATE
+    POTATO_AUCTION_DIR="${CMAKE_SOURCE_DIR}/assets/auctions")
+target_link_libraries(potato_test_auction PotatoCampaign)
+add_test(NAME potato_test_auction COMMAND potato_test_auction)
+
+# Story 2.1 — campaign-account double-entry ledger
 add_executable(potato_test_ledger Examples/potato_test_ledger.cpp)
 target_include_directories(potato_test_ledger PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(potato_test_ledger PotatoCampaign)

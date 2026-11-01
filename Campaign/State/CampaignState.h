@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Campaign/Characters/Character.h"
+#include "Campaign/Auction/AuctionHouse.h"
 #include "Campaign/Ledger/Ledger.h"
 #include "Campaign/Myth/MythLog.h"
 #include "Campaign/Narrative/BencaoCodex.h"
@@ -122,6 +123,9 @@ public:
     BencaoCodex& GetCodex() { return codex_; }
     const BencaoCodex& GetCodex() const { return codex_; }
 
+    AuctionHouseState& GetAuction() { return auction_; }
+    const AuctionHouseState& GetAuction() const { return auction_; }
+
     Gameplay::Result<Gameplay::JsonValue> ToJson() const;
     static Gameplay::Result<CampaignState> FromJson(
         const Gameplay::JsonValue& doc);
@@ -137,6 +141,7 @@ private:
     IntelLedger intel_;
     MythLog myth_;
     BencaoCodex codex_;
+    AuctionHouseState auction_;
 };
 
 } // namespace Potato::Campaign
