@@ -53,6 +53,7 @@ const char* OverworldTabTitle(OverworldTab t) {
         case OverworldTab::Roster:     return "名冊";
         case OverworldTab::Ledger:     return "帳冊";
         case OverworldTab::Codex:      return "本草";
+        case OverworldTab::Auction:    return "拍賣";
     }
     return "?";
 }

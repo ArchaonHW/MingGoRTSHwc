@@ -57,6 +57,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <filesystem>
+#include <limits>
 #include <map>
 #include <memory>
 #include <optional>
@@ -128,6 +129,15 @@ int main() {
     Campaign::EncounterLibrary encs;
     Campaign::EncounterLibrary::Load("assets/encounters", encs);
     Campaign::BencaoLibrary bencaoLib;
+    auto auctionLotResult =
+        Campaign::AuctionLot::Load("assets/auctions/militia_contract.json");
+    if (!auctionLotResult.ok()) {
+        std::fprintf(stderr, "auction lot unavailable: %s\n",
+                     auctionLotResult.reason.c_str());
+        return 1;
+    }
+    const Campaign::AuctionLot auctionLot =
+        std::move(auctionLotResult.value);
     Campaign::BencaoLibrary::Load("assets/bencao", bencaoLib);
 
     auto cardsR = Gameplay::DoctrineLibrary::Load(
@@ -215,6 +225,8 @@ int main() {
         run->state.GetLedger().Post(seed);
         Campaign::Enlist(run->state, "先鋒營");
         Campaign::Enlist(run->state, "輕騎隊");
+        run->state.GetAuction().Start(auctionLot,
+                                      run->state.GetWorld().Day());
         run->deck = c.deck.empty()
                         ? Game::RollDeck(c.deckSeed, cards)
                         : c.deck;
@@ -252,6 +264,7 @@ int main() {
     std::string formError;
     bool confirmDeploy = false;
     bool drawerOpen = true;
+    std::int64_t auctionBid = auctionLot.openingBid;
 
     bool running = true;
     Game::ActionNotice actionNotice;
@@ -339,6 +352,10 @@ int main() {
                     if (s.ok()) {
                         run = std::make_unique<Run>();
                         run->state = std::move(s.value);
+                        if (run->state.GetAuction().LotId().empty()) {
+                            run->state.GetAuction().Start(
+                                auctionLot, run->state.GetWorld().Day());
+                        }
                         flow.Request(Game::ScreenId::Overworld);
                     }
                     Game::ShowActionResult(actionNotice, s, "續玩");
@@ -684,6 +701,67 @@ int main() {
                         ImGui::SameLine();
                         ImGui::TextDisabled("%s",
                                             e.memo.c_str());
+                    }
+                    ImGui::EndTabItem();
+                }
+                if (ImGui::BeginTabItem("拍賣")) {
+                    auto& auction = run->state.GetAuction();
+                    const auto& ledger = run->state.GetLedger();
+                    if (auction.Settled()) {
+                        if (auction.ClearingPrice() > 0) {
+                            ImGui::Text("已成交：%s · 成交價 %lld 物資",
+                                        auctionLot.rewardSquad.c_str(),
+                                        (long long)auction.ClearingPrice());
+                        } else {
+                            ImGui::Text("本次競標未得標，托管物資已退回。");
+                        }
+                    } else if (auction.Open()) {
+                        ImGui::Text("%s", auctionLot.title.c_str());
+                        ImGui::Text("截止：第 %lld 日 · 可用物資：%lld",
+                                    (long long)auction.ClosesOnDay(),
+                                    (long long)ledger.Balance(
+                                        Campaign::Account::Materiel));
+                        ImGui::Text("起標 %lld · 最低加價 %lld · 已托管 %lld",
+                                    (long long)auctionLot.openingBid,
+                                    (long long)auctionLot.increment,
+                                    (long long)ledger.Balance(
+                                        Campaign::Account::AuctionEscrow));
+                        if (auction.PlayerMaxBid() > 0) {
+                            ImGui::Text("你的最高出價：%lld",
+                                        (long long)auction.PlayerMaxBid());
+                        }
+                        if (ws.Day() < auction.ClosesOnDay()) {
+                            ImGui::InputScalar("最高出價", ImGuiDataType_S64,
+                                               &auctionBid);
+                            if (ImGui::Button("提交出價")) {
+                                const auto bid = auction.Bid(
+                                    run->state.GetLedger(), auctionLot,
+                                    auctionBid, ws.Day());
+                                if (!bid.ok()) {
+                                    ImGui::SameLine();
+                                    ImGui::TextColored(
+                                        {1, .35f, .3f, 1}, "%s",
+                                        bid.reason.c_str());
+                                } else if (auctionBid <=
+                                           std::numeric_limits<std::int64_t>::max() -
+                                               auctionLot.increment) {
+                                    auctionBid += auctionLot.increment;
+                                }
+                            }
+                        } else {
+                            if (ImGui::Button("結算拍賣")) {
+                                const auto result = auction.Settle(
+                                    run->state, auctionLot, ws.Day());
+                                if (!result.ok()) {
+                                    ImGui::SameLine();
+                                    ImGui::TextColored({1, .35f, .3f, 1}, "%s",
+                                                       result.reason.c_str());
+                                }
+                            }
+                        }
+                        if (ws.Day() < auction.ClosesOnDay()) {
+                            ImGui::TextDisabled("期限前可調高出價；歇息或推進戰役日期以等待結標。");
+                        }
                     }
                     ImGui::EndTabItem();
                 }
@@ -1178,6 +1256,10 @@ int main() {
                     if (s.ok()) {
                         run = std::make_unique<Run>();
                         run->state = std::move(s.value);
+                        if (run->state.GetAuction().LotId().empty()) {
+                            run->state.GetAuction().Start(
+                                auctionLot, run->state.GetWorld().Day());
+                        }
                         endBattle();
                         flow.AbandonToTitle();
                         flow.Request(

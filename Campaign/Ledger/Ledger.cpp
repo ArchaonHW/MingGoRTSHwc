@@ -10,7 +10,7 @@ using Gameplay::JsonValue;
 
 constexpr std::string_view kNames[kAccountCount] = {
     "martial_merit", "popular_support", "mandate",
-    "army_prestige", "materiel",
+    "army_prestige", "materiel", "auction_escrow", "auction_treasury",
 };
 
 JsonValue LegToJson(const Leg& l) {
