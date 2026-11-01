@@ -64,7 +64,10 @@ std::string RenderCodex(const BencaoLibrary& lib,
     // 序頁 — worldview §4 verbatim; always precedes browsing.
     out += "序：是冊所載，皆前人之驗、草木之性，錄以備考，"
            "非為用藥之據。\n"
-           "　　病家慎勿執紙上之言以試人身。\n";
+           "　　病家慎勿執紙上之言以試人身。\n"
+           "文獻：明代藥學家李時珍（1518–1593）撰《本草綱目》，"
+           "全書五十二卷、十六部，萬曆二十四年（1596）於南京刊行。\n"
+           "編目：本冊依遊戲需要歸為八類，並非原書部目之轉錄。\n";
 
     std::size_t shown = 0;
     // The book's TOC is stable: all 8 部類 headers always emit,

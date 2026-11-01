@@ -643,6 +643,14 @@ add_executable(potato_test_bencao Examples/potato_test_bencao.cpp)
 target_include_directories(potato_test_bencao PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(potato_test_bencao PotatoCampaign)
 add_test(NAME potato_test_bencao COMMAND potato_test_bencao)
+# Game-only codex frontispiece attribution and adapted taxonomy.
+add_executable(potato_test_bencao_frontispiece
+               Examples/MingGoRTS/potato_test_bencao_frontispiece.cpp)
+target_include_directories(potato_test_bencao_frontispiece
+                           PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(potato_test_bencao_frontispiece PotatoCampaign)
+add_test(NAME potato_test_bencao_frontispiece
+         COMMAND potato_test_bencao_frontispiece)
 # Story 13.2 — QuantumOracle adapter (FP boundary: ints only out)
 add_executable(potato_test_oracle Examples/potato_test_oracle.cpp)
 target_include_directories(potato_test_oracle PRIVATE ${CMAKE_SOURCE_DIR})

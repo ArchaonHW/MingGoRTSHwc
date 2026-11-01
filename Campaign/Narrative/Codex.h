@@ -12,8 +12,10 @@ class BuchaoStore;
 // text layout on the HistorianReport precedent; page chrome
 // (冊頁 art, palette) is Epic F shell work.
 //
-//   frontispiece — the 序頁 disclaimer (worldview §4) verbatim,
-//                  always precedes browsing
+//   frontispiece — the 序頁 disclaimer and historical source note,
+//                  always precede browsing; the in-game eight
+//                  categories are identified as an adaptation of
+//                  Li Shizhen's sixteen-part source organization
 //   sections     — all 8 部類 headers in canonical order, even
 //                  sections holding only sealed slots
 //   unlocked     — full 本草體 page: 釋名/集解/性味歸經/主治/
