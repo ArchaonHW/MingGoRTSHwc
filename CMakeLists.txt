@@ -704,6 +704,13 @@ target_include_directories(potato_test_character PRIVATE ${CMAKE_SOURCE_DIR})
 target_link_libraries(potato_test_character PotatoCampaign)
 add_test(NAME potato_test_character COMMAND potato_test_character)
 
+# Game-layer content integration: 首獵者 and the shipped tonfa doctrine card.
+add_executable(potato_test_shou_lie_zhe
+    Examples/MingGoRTS/potato_test_shou_lie_zhe.cpp)
+target_include_directories(potato_test_shou_lie_zhe PRIVATE ${CMAKE_SOURCE_DIR})
+target_link_libraries(potato_test_shou_lie_zhe PotatoCampaign)
+add_test(NAME potato_test_shou_lie_zhe COMMAND potato_test_shou_lie_zhe)
+
 # Story 12.5 — encounter pipeline (potato.encounter/1): world
 # position -> three-beat battle -> world writeback + gated claims
 add_executable(potato_test_encounter Examples/potato_test_encounter.cpp)
